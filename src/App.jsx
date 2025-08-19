@@ -10,6 +10,20 @@ function App() {
   const [trendingVideos, setTrendingVideos] = useState([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+      if (window.innerWidth > 768 && isMenuOpen) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isMenuOpen]);
 
   useEffect(() => {
     const sortedVideos = [...(data.TrendingNow || data.TendingNow || [])]
@@ -17,7 +31,7 @@ function App() {
       .slice(0, 50);
 
     const viewedVideos = JSON.parse(
-      sessionStorage.getItem("viewedVideos") || "[]"
+      localStorage.getItem("viewedVideos") || "[]"
     );
 
     if (viewedVideos.length > 0) {
@@ -41,7 +55,6 @@ function App() {
       });
 
       viewed.sort((a, b) => a.viewOrder - b.viewOrder);
-
       setTrendingVideos([...viewed, ...notViewed]);
     } else {
       setTrendingVideos(sortedVideos);
@@ -52,21 +65,23 @@ function App() {
     setFeaturedVideo(video);
     setIsPlaying(false);
 
+    if (isMobile && isMenuOpen) {
+      setIsMenuOpen(false);
+    }
+
     setTimeout(() => {
       setIsPlaying(true);
     }, 2000);
 
     const viewedVideos = JSON.parse(
-      sessionStorage.getItem("viewedVideos") || "[]"
+      localStorage.getItem("viewedVideos") || "[]"
     );
 
     const filteredViewed = viewedVideos.filter((v) => v.Id !== video.Id);
-
     const updatedViewedVideos = [video, ...filteredViewed];
-
     const limitedViewedVideos = updatedViewedVideos.slice(0, 20);
 
-    sessionStorage.setItem("viewedVideos", JSON.stringify(limitedViewedVideos));
+    localStorage.setItem("viewedVideos", JSON.stringify(limitedViewedVideos));
 
     setTrendingVideos((prevVideos) => {
       const otherVideos = prevVideos.filter((v) => v.Id !== video.Id);
@@ -88,11 +103,25 @@ function App() {
     setIsMenuOpen(isOpen);
   };
 
+  const handleOverlayClick = () => {
+    if (isMobile && isMenuOpen) {
+      setIsMenuOpen(false);
+    }
+  };
+
   return (
     <div className="app">
-      <Menu onToggle={handleMenuToggle} />
+      <Menu
+        onToggle={handleMenuToggle}
+        isOpen={isMenuOpen}
+        isMobile={isMobile}
+      />
 
-      <div className={`main-content ${isMenuOpen ? "content-dimmed" : ""}`}>
+      {isMobile && isMenuOpen && (
+        <div className="mobile-overlay" onClick={handleOverlayClick} />
+      )}
+
+      <div className={`main-content ${isMenuOpen ? "menu-open" : ""}`}>
         <FeaturedVideo
           video={featuredVideo}
           isPlaying={isPlaying}

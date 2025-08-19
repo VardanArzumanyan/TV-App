@@ -23,59 +23,114 @@ body {
   transition: all 0.3s ease;
   position: relative;
   z-index: 1;
+  min-width: 0;
 }
 
-.content-dimmed::before {
-  content: "";
+.main-content.menu-open {
+  margin-left: 240px;
+}
+
+.mobile-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    to right,
-    rgba(0, 0, 0, 0.9) 0%,
-    rgba(0, 0, 0, 0.7) 80px,
-    rgba(0, 0, 0, 0.5) 240px,
-    rgba(0, 0, 0, 0.3) 100%
-  );
-  z-index: 2;
-  transition: all 0.3s ease;
-  pointer-events: none;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 15;
+  transition: opacity 0.3s ease;
 }
 
-@media (max-width: 968px) {
+@media (max-width: 1024px) {
   .main-content {
-    margin-left: 60px;
-    padding: 20px;
+    margin-left: 70px;
+    padding: 0 20px;
   }
 
-  .menu-open ~ .main-content {
-    margin-left: 200px;
+  .main-content.menu-open {
+    margin-left: 220px;
   }
 }
 
 @media (max-width: 768px) {
   .main-content {
-    margin-left: 50px;
-    padding: 15px;
+    margin-left: 0;
+    padding: 0 15px;
+    width: 100%;
   }
 
-  .menu-open ~ .main-content {
-    margin-left: 180px;
+  .main-content.menu-open {
+    margin-left: 0;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 0 10px;
   }
 
-  .menu-item {
-    padding: 15px 12px;
+  .main-content * {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 1400px) {
+  .main-content {
+    margin-left: 90px;
+    padding: 0 30px;
   }
 
-  .menu-item-icon {
-    width: 28px;
-    height: 28px;
-    margin-right: 15px;
+  .main-content.menu-open {
+    margin-left: 260px;
   }
+}
 
-  .menu-item-text {
-    font-size: 16px;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 13px;
+  }
+}
+
+.spacing-responsive {
+  margin: clamp(10px, 2vw, 20px);
+  padding: clamp(15px, 3vw, 30px);
+}
+
+.main-content::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.main-content {
+  overflow-x: hidden;
+}
+
+*:focus {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
