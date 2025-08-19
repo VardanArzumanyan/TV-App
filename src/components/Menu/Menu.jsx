@@ -7,7 +7,7 @@ import Icon4 from "../../icons/Icon4.png";
 import Icon5 from "../../icons/Icon5.png";
 import Icon6 from "../../icons/Icon6.png";
 
-import ProfileImg from "../../img/ProfileImg.png";
+import ProfileImg from "/img/ProfileImg.png";
 
 import "./Menu.css";
 
