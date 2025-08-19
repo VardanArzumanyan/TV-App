@@ -1,5 +1,4 @@
 import PlayIcon from "../../icons/PlayIcon.png";
-
 import "./FeaturedVideo.css";
 
 const FeaturedVideo = ({ video, isPlaying, onPlayClick }) => {
@@ -15,17 +14,20 @@ const FeaturedVideo = ({ video, isPlaying, onPlayClick }) => {
         <video
           autoPlay
           muted
+          loop
           className="featured-background-video"
           src={video.VideoUrl}
         />
       ) : (
-        <div className="featured-background">
-          <img
-            src={video.CoverImage}
-            alt={video.Title}
-            className="featured-background-image"
-          />
-        </div>
+        <div
+          className="featured-background"
+          style={{
+            backgroundImage: `url(${video.CoverImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
       )}
 
       <div className="featured-content">

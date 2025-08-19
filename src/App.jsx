@@ -12,7 +12,7 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
-    const sortedVideos = [...data.TendingNow]
+    const sortedVideos = [...(data.TrendingNow || data.TendingNow || [])]
       .sort((a, b) => new Date(b.Date) - new Date(a.Date))
       .slice(0, 50);
 
@@ -21,9 +21,26 @@ function App() {
     );
 
     if (viewedVideos.length > 0) {
-      const viewedIds = viewedVideos.map((v) => v.Id);
-      const viewed = sortedVideos.filter((v) => viewedIds.includes(v.Id));
-      const notViewed = sortedVideos.filter((v) => !viewedIds.includes(v.Id));
+      const viewedMap = new Map();
+      viewedVideos.forEach((video, index) => {
+        viewedMap.set(video.Id, { ...video, viewOrder: index });
+      });
+
+      const viewed = [];
+      const notViewed = [];
+
+      sortedVideos.forEach((video) => {
+        if (viewedMap.has(video.Id)) {
+          viewed.push({
+            ...video,
+            viewOrder: viewedMap.get(video.Id).viewOrder,
+          });
+        } else {
+          notViewed.push(video);
+        }
+      });
+
+      viewed.sort((a, b) => a.viewOrder - b.viewOrder);
 
       setTrendingVideos([...viewed, ...notViewed]);
     } else {
@@ -43,11 +60,23 @@ function App() {
       sessionStorage.getItem("viewedVideos") || "[]"
     );
 
-    const filtered = viewedVideos.filter((v) => v.Id !== video.Id);
+    const filteredViewed = viewedVideos.filter((v) => v.Id !== video.Id);
 
-    sessionStorage.setItem(
-      "viewedVideos",
-      JSON.stringify([video, ...filtered])
+    const updatedViewedVideos = [video, ...filteredViewed];
+
+    const limitedViewedVideos = updatedViewedVideos.slice(0, 20);
+
+    sessionStorage.setItem("viewedVideos", JSON.stringify(limitedViewedVideos));
+
+    setTrendingVideos((prevVideos) => {
+      const otherVideos = prevVideos.filter((v) => v.Id !== video.Id);
+      return [video, ...otherVideos];
+    });
+
+    console.log("Video clicked:", video.Title);
+    console.log(
+      "Updated viewed videos:",
+      limitedViewedVideos.map((v) => v.Title)
     );
   };
 
